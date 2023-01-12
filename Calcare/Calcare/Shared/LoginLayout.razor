@@ -1,0 +1,34 @@
+@inherits LayoutComponentBase
+
+<div class="page">
+    <main>
+        <div class="top-row px-4">
+            <!-- TODO: Add the title to the center of the top row -->
+            @_CurrentDateTime
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code {
+    private string _CurrentDateTime = "";
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized(); // Call the base class implementation first
+        _CurrentDateTime = DateTime.Now.ToString("dddd, d MMMM yyyy HH:mm:ss"); // Set _CurrentDateTime to the current date and time, in the format "Monday, 1 January 2018 12:00:00"
+        UpdateTime(); // Call the UpdateTime method to start the timer
+    }
+
+    async protected void UpdateTime()
+    {
+        while (true) {
+            await Task.Delay(1000);
+            _CurrentDateTime = DateTime.Now.ToString("dddd, dd MMMM yyyy HH:mm:ss");
+            StateHasChanged();
+        }
+    }
+}

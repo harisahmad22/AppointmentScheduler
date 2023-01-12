@@ -1,0 +1,17 @@
+[
+  {
+    "name": "John Doe",
+    "shift": "10:00am - 2:00pm",
+    "notes": "Not available"
+  },
+  {
+    "name": "Stephen Hunter",
+    "shift": "8:00am - 12:00pm",
+    "notes": "Office medical equipment maintainance"
+  },
+  {
+    "name": "Elizabeth Paul",
+    "shift": "8:00am - 4:00pm",
+    "notes": "Surgery list posted"
+  }
+]

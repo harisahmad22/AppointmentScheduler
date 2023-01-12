@@ -1,0 +1,10 @@
+{
+    "12345-6789": {
+        "name": "John Doe",
+        "dob": "01/01/1970",
+        "address": "123 Main St, Calgary, AB, T2P 2P2",
+        "email": "johndoe@gmail.com",
+        "phone": "123-456-7890",
+        "notes": {}
+    }
+}

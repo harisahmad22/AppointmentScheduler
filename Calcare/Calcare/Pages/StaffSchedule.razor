@@ -1,0 +1,91 @@
+﻿@page "/fetchdata"
+@inject HttpClient Http
+
+<PageTitle>Staff Schedule - Calcare</PageTitle>
+
+<h1>Staff Schedule</h1>
+
+<p>Staff schedule for @dateTime.ToString("MMMM dd, yyyy") </p>
+@if (staff == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Shift</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var member in staff)
+            {
+                <tr>
+
+                    <td>@member.Name</td>
+                    <td>@member.Shift</td>
+                    <td>@member.Notes</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="buttons">
+        <p>
+            <button id="userbtn" @onclick="Yesterday">Previous Day</button>
+             <button id="userbtn"  @onclick="Current">Today</button>
+            <button id="userbtn"  @onclick="Tomorrow">Next Day</button>
+        </p>
+    </div>
+}
+
+@code {
+
+    private StaffInfo[]? staff;
+    private StaffInfo[]? staff2;
+    private StaffInfo[]? staff3;
+
+
+    private DateTime dateTime = DateTime.Now;
+
+
+
+    private void Current()
+    {
+        dateTime = DateTime.Now;
+        staff = staff;
+    }
+    private void Yesterday()
+    {
+        staff = staff2;
+        dateTime = DateTime.Today.AddDays(-1);
+
+
+    }
+
+    private void Tomorrow()
+    {
+        staff = staff3;
+        dateTime = DateTime.Today.AddDays(+1);
+    }
+    
+
+    protected override async Task OnInitializedAsync()
+    {
+        // TODO: Replace this with FileManager.
+        staff = await Http.GetFromJsonAsync<StaffInfo[]>("data/staff.json");
+        staff2 = await Http.GetFromJsonAsync<StaffInfo[]>("data/staff2.json");
+        staff3 = await Http.GetFromJsonAsync<StaffInfo[]>("data/staff3.json");
+    }
+
+    public class StaffInfo
+    {
+        public string Name { get; set; }
+
+        public string Shift { get; set; }
+
+        public string? Notes { get; set; }
+    }
+}

@@ -1,0 +1,21 @@
+h2 {
+    padding: 1rem;
+}
+
+.parent {
+    width: 100%;
+    padding: 2rem 2rem;
+    text-align: center;
+    display: flex;
+    flex-basis: auto;
+    justify-content: space-evenly;
+    gap: 1rem;
+}
+
+.child {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    text-align:start;
+}

@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Pages\Index.cshtml.cs" />
+    <Compile Remove="Pages\Index2.cshtml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Pages\Component.razor" />
+    <Content Remove="Pages\Index.cshtml" />
+    <Content Remove="Pages\Index1.cshtml" />
+    <Content Remove="Pages\Index2.cshtml" />
+    <Content Remove="Pages\Index3.cshtml" />
+    <Content Remove="Pages\UserProfile.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Pages\UserProfile.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BlazorScheduler" Version="4.3.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.10" PrivateAssets="all" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+  </ItemGroup>
+
+</Project>

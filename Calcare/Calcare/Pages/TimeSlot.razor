@@ -1,0 +1,11 @@
+﻿<li class="time-slot-item time">@($"{curTime.Hour}:{curTime.Minute}")</li>
+<li class="time-slot-item appointment blank">Open</li>
+<li class="time-slot-item appointment blank">Open</li>
+
+@code {
+    [Parameter]
+    public DateTime curTime { get; set; }
+
+    [Parameter]
+    public AppointmentData appointmentData { get; set; }
+}

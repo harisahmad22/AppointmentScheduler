@@ -1,0 +1,17 @@
+[
+    {
+      "name": "Hillary Owen",
+      "shift": "10:00am - 2:00pm",
+      "notes": "Document work"
+    },
+    {
+      "name": "Mckenzie Hudson",
+      "shift": "2:00am - 5:00pm",
+      "notes": "Equipment handling"
+    },
+    {
+      "name": "John Brown",
+      "shift": "Unavailable",
+      "notes": "Not Available for the week"
+    }
+]

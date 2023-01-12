@@ -1,0 +1,16 @@
+@page "/logout"
+@inject NavigationManager NavManager
+
+<PageTitle>Logout - Calcare</PageTitle>
+
+<h1>Logout</h1>
+
+<p>Logging out...</p>
+
+@code {
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        NavManager.NavigateTo("/");
+    }
+}

@@ -1,0 +1,17 @@
+[
+    {
+      "name": "Emma Webster",
+      "shift": "9:00am - 5:00pm",
+      "notes": "N/A"
+    },
+    {
+      "name": "Dr. Gerald Jinx Mouse",
+      "shift": "9:00am - 5:00pm",
+      "notes": "On vacation next week."
+    },
+    {
+      "name": "Dr. Thomas Jasper Cat",
+      "shift": "Unavailable",
+      "notes": "Out due to injury from Dr. Mouse."
+    }
+]

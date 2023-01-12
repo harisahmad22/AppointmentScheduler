@@ -1,0 +1,91 @@
+is_global = true
+build_property.TargetFramework = net6.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = false
+build_property.PlatformNeutralAssembly = 
+build_property._SupportedPlatformList = browser
+build_property.EnableSingleFileAnalyzer = 
+build_property.EnableTrimAnalyzer = true
+build_property.IncludeAllContentForSelfExtract = 
+build_property.RootNamespace = Calcare
+build_property.RootNamespace = Calcare
+build_property.ProjectDir = E:\Documents\GitHub\Calcare\Calcare\Calcare\
+build_property.RazorLangVersion = 6.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = E:\Documents\GitHub\Calcare\Calcare\Calcare
+build_property._RazorSourceGeneratorDebug = 
+
+[E:/Documents/GitHub/Calcare/Calcare/Calcare/App.razor]
+build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/Documents/GitHub/Calcare/Calcare/Calcare/Pages/Logout.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9nb3V0LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/Documents/GitHub/Calcare/Calcare/Calcare/Pages/OldCalendar.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcT2xkQ2FsZW5kYXIucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/Documents/GitHub/Calcare/Calcare/Calcare/Shared/SurveyPrompt.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXFN1cnZleVByb21wdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/Documents/GitHub/Calcare/Calcare/Calcare/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/Documents/GitHub/Calcare/Calcare/Calcare/Pages/AccountManagement.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWNjb3VudE1hbmFnZW1lbnQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-n20dwtnlgy
+
+[E:/Documents/GitHub/Calcare/Calcare/Calcare/Pages/Calendar.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2FsZW5kYXIucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-c4m3jvqhye
+
+[E:/Documents/GitHub/Calcare/Calcare/Calcare/Pages/CreatePatient.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ3JlYXRlUGF0aWVudC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-5u907rhgp0
+
+[E:/Documents/GitHub/Calcare/Calcare/Calcare/Pages/Index.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXgucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-2uejs1j0e1
+
+[E:/Documents/GitHub/Calcare/Calcare/Calcare/Pages/Login.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9naW4ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-w9pcv3jxrz
+
+[E:/Documents/GitHub/Calcare/Calcare/Calcare/Pages/PatientLookup.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUGF0aWVudExvb2t1cC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-mlr8niq2jv
+
+[E:/Documents/GitHub/Calcare/Calcare/Calcare/Pages/PatientManagement.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUGF0aWVudE1hbmFnZW1lbnQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-bx9fwpdngc
+
+[E:/Documents/GitHub/Calcare/Calcare/Calcare/Pages/StaffSchedule.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU3RhZmZTY2hlZHVsZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-zdnt1m02ue
+
+[E:/Documents/GitHub/Calcare/Calcare/Calcare/Pages/TimeSlot.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVGltZVNsb3QucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-r7lcceymop
+
+[E:/Documents/GitHub/Calcare/Calcare/Calcare/Shared/InfoBox.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXEluZm9Cb3gucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-p4oezp3i6j
+
+[E:/Documents/GitHub/Calcare/Calcare/Calcare/Shared/LoginLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXExvZ2luTGF5b3V0LnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-ywp8f1o15u
+
+[E:/Documents/GitHub/Calcare/Calcare/Calcare/Shared/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXE1haW5MYXlvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-9k83t3nl4y
+
+[E:/Documents/GitHub/Calcare/Calcare/Calcare/Shared/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXE5hdk1lbnUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-54r2a2xalu

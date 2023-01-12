@@ -1,0 +1,55 @@
+<!-- Render a box using HTML, that uses the title and adds all the bullet points from _List -->
+<div class="">
+    <h2>@Title</h2>
+    <ul>
+        @if (_List.Count > 0)
+        {
+            @foreach (var item in _List)
+            {
+                <li>@item</li>
+            }
+        }
+        else
+        {
+            <li>No items</li>
+        }
+    </ul>
+</div>
+
+
+@code {
+    private List<string> _List = new List<string>();
+
+    [Parameter]
+    public string? Title { get; set; }
+
+    public List<string> List
+    {
+        get { return new List<string>(_List); }
+    }
+
+    public void Add(string item)
+    {
+        _List.Add(item);
+    }
+
+    public void Clear()
+    {
+        _List.Clear();
+    }
+
+    public void Remove(string item)
+    {
+        _List.Remove(item);
+    }
+
+    public void RemoveAt(int index)
+    {
+        _List.RemoveAt(index);
+    }
+
+    public int Length()
+    {
+        return _List.Count;
+    }
+}

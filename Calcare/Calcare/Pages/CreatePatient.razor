@@ -1,0 +1,88 @@
+﻿@page "/createpatient/{AHN?}"
+
+@using System;
+
+@inject FileManager fileManager;
+@inject NavigationManager navigationManager;
+
+<PageTitle>Patient Lookup - Calcare</PageTitle>
+
+<div class="cardbox">
+    <p class="title"></p>
+    <h1>Patient Information</h1>
+    
+    <EditForm Model="@model">
+        <DataAnnotationsValidator />
+
+        <label for="Name">Name</label>
+        <InputText type="string" @bind-Value="model.Name" placeholder="Name" class="form-control" id="Name" />
+        <ValidationMessage For="() => model.Name" />
+
+        <label for="Name">Alberta Health Number</label>
+        <InputText @bind-Value="model.AHN" class="form-control" id="ahn" />
+        <ValidationMessage For="() => model.AHN" />
+
+        <label for="Name">Date Of Birth</label>
+        <InputText @bind-Value="model.DOB" class="form-control" id="dob" />
+        <ValidationMessage For="() => model.DOB" />
+
+        <label for="Name">Phone</label>
+        <InputText @bind-Value="model.PhoneNumber" class="form-control" id="phone" />
+        <ValidationMessage For="() => model.PhoneNumber" />
+
+        <label for="Name">Email</label>
+        <InputText @bind-Value="model.Email" class="form-control" id="email" />
+        <ValidationMessage For="() => model.Email" />
+
+        <label for="Name">Address</label>
+        <InputText @bind-Value="model.Address" class="form-control" id="address" />
+        <ValidationMessage For="() => model.Address" />
+
+        <p><button @onclick="HandleUpdateSubmit" id="userbtn">CREATE</button></p>
+
+    </EditForm>
+
+</div>
+
+@code {
+
+    [Parameter]
+    public string? AHN { get; set; }
+    
+    private string dob;
+    public string name;
+    private string ahnuser;
+    private string userphone;
+    private string useremail;
+    private string useraddress;
+
+    // PatientData patientData = new PatientData();
+    private PatientDataForm model = new();
+    private Regex _AHNValidationRegex = new Regex(@"^\d{5}-\d{4}$");
+
+    public bool ValidateAHNInput(string input)
+    {
+        return _AHNValidationRegex.IsMatch(input);
+    }
+
+    public void HandleUpdateSubmit()
+    {
+        PatientData patientData = new PatientData();
+        patientData.AHN = model.AHN;
+        patientData.Name = model.Name;
+        patientData.DOB = model.DOB;
+        patientData.PhoneNumber = model.PhoneNumber;
+        patientData.Email = model.Email;
+        patientData.Address = model.Address;
+        fileManager.SetPatientData(patientData.AHN, patientData);
+
+        navigationManager.NavigateTo("/patientlookup/" + model.AHN);
+    }
+
+    public class Appointment
+    {
+        public DateTime Date { get; set; }
+        public string Doctor { get; set; }
+        public string Description { get; set; }
+    }
+}

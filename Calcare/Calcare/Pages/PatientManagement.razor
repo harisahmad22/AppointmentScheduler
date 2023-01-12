@@ -1,0 +1,78 @@
+@page "/patientmanagement"
+
+@using System;
+@using System.Text.RegularExpressions;
+
+@inject FileManager fileManager;
+@inject NavigationManager navigationManager;
+
+<PageTitle>Patient Management - Calcare</PageTitle>
+
+<!-- https://learn.microsoft.com/en-us/aspnet/core/blazor/forms-and-input-components?view=aspnetcore-7.0 -->
+
+<div class="top">
+    <EditForm Model="@model" OnValidSubmit="@HandleValidSubmit">
+        <DataAnnotationsValidator />
+
+
+        <div class="form-group">
+
+            <h3>Patient Lookup</h3><br />
+            <!-- Update the searchbar to validate the input against ValidateAHNInput() -->
+            <InputText id="searchbar" class="form-control" name="searchbar" placeholder="Alberta Health Number..." size="50" @bind-Value="model.AHN" />
+            <ValidationMessage For="() => model.AHN" />
+            <p>
+                <button id="userbtn" @onclick="SearchPatient">SEARCH</button>
+                <button id="userbtn" @onclick="CreatePatient">CREATE</button>
+            </p>
+
+        </div>
+
+    </EditForm>
+
+</div>
+
+@code {
+    private AlbertaHealthCareNumber model = new();
+    private Regex _AHNValidationRegex = new Regex(@"^\d{5}-\d{4}$");
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    public bool ValidateAHNInput(string input)
+    {
+        return _AHNValidationRegex.IsMatch(input);
+    }
+
+    public void SearchPatient() // TODO: Update userbtn to call this method
+    {
+        Console.WriteLine(model.AHN);
+
+        if (ValidateAHNInput(model.AHN))
+        {
+            Boolean patientExists = fileManager.PatientExists(model.AHN);
+            if (!patientExists)
+            {
+                Console.WriteLine("Patient not found");
+                return;
+            }
+
+            PatientData patientData = fileManager.GetPatientData(model.AHN);
+            Console.WriteLine("AHN: " + patientData.AHN + "\nName: " + patientData.Name + "\nDOB: " + patientData.DOB + "\nAddress: " + patientData.Address + "\nPhone: " + patientData.PhoneNumber + "\nEmail: " + patientData.Email);
+            navigationManager.NavigateTo("/patientlookup/" + model.AHN);
+        }
+    }
+
+    public void CreatePatient()
+    {
+        navigationManager.NavigateTo("/createpatient/");
+    }
+
+    private void HandleValidSubmit()
+    {
+        // This is useless, we don't need to do anything here as we do everything in SearchPatient().
+
+    }
+}

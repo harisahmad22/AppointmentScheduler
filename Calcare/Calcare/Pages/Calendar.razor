@@ -1,0 +1,742 @@
+﻿@page "/calendar/{AHN?}"
+
+@using System;
+@using Newtonsoft.Json.Linq;
+
+@inject FileManager fileManager;
+
+@if (!string.IsNullOrEmpty(AHN)) {
+    <PageTitle>@AHN - Calendar - Calcare</PageTitle>
+} else {
+    <PageTitle>Calendar - Calcare</PageTitle>
+}
+
+@{
+    List<string> daysOfWeek = new List<string>();
+    daysOfWeek.Add("Sunday");daysOfWeek.Add("Monday");daysOfWeek.Add("Tuesday");daysOfWeek.Add("Wednesday");daysOfWeek.Add("Thursday");daysOfWeek.Add("Friday");daysOfWeek.Add("Saturday");
+    List<string> months = new List<string>();
+    months.Add("January");months.Add("February");months.Add("March");months.Add("April");months.Add("May");months.Add("June");months.Add("July");months.Add("August");months.Add("September");months.Add("October");months.Add("November");months.Add("December");
+    // Get the current date
+    var date = DateTime.Now;
+    // DateTime dDate = date;
+
+    // Get the first day of the month with the week day
+    var firstDayOfMonth = new DateTime(currentDate.Year, currentDate.Month, 1);
+
+    // Get the last day of the month
+    var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+
+    var days = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);
+    var start = 0;
+
+    for (var i = 0; i < daysOfWeek.Count; i++)
+    {
+        if (firstDayOfMonth.DayOfWeek.ToString() == daysOfWeek[i])
+        {
+            start = -i + 1;
+
+            break;
+        }
+    }
+    var cnt = 1;
+
+    int getWeekIdx(string day)
+    {
+        for (var k = 0; k < daysOfWeek.Count; k++)
+        {
+            if (day == daysOfWeek[k]) { return k; }
+        }
+        return -1;
+    }
+
+    DateTime getStartOfWeek()
+    {
+        int dowIdx = getWeekIdx(currentDate.DayOfWeek.ToString());
+        DateTime startOfWeek = currentDate;
+
+        if (dowIdx > 0 && currentDate.Day - dowIdx > 0)
+        {
+            startOfWeek = new DateTime(currentDate.Year, currentDate.Month, currentDate.Day - dowIdx);
+        } 
+        else
+        {
+            for (int k = dowIdx; k > 0; k--)
+            {
+                if (currentDate.Day - k > 0)
+                {
+                    startOfWeek = new DateTime(currentDate.Year, currentDate.Month, currentDate.Day - k);
+                    break;
+                }
+            }
+        }
+
+        if (startOfWeek.Day == 1)
+        {
+            currentDate = new DateTime(startOfWeek.Year, startOfWeek.Month, 1);
+        }
+        return startOfWeek;
+    }
+
+    int getWeekLength(DateTime week)
+    {
+        var weekIdx = getWeekIdx(week.DayOfWeek.ToString());
+        if (6 - weekIdx > days - week.Day)
+        {
+            return days - week.Day;
+        }
+        return 6 - getWeekIdx(week.DayOfWeek.ToString());
+    }
+
+    string formatMin(int min) {
+        if(min < 10)
+        {
+            return "0" + min;
+        }
+        return min.ToString();
+    }
+
+    bool dateIsLessThan(DateTime date1, DateTime date2)
+    {
+        if (date1.Year < date2.Year)
+        {
+            return true;
+        }
+        else if (date1.Year == date2.Year)
+        {
+            if (date1.Month < date2.Month)
+            {
+                return true;
+            }
+            else if (date1.Month == date2.Month)
+            {
+                if (date1.Day < date2.Day)
+                {
+                    return true;
+                } 
+                else if (date1.Day == date2.Day)
+                {
+                    if (date1.Hour < date2.Hour) {
+                        return true;
+                    } 
+                    else if (date1.Hour == date2.Hour)
+                    {
+                        if (date1.Minute < date2.Minute)
+                        {
+                            return true;
+                        } 
+                        else if (date1.Minute == date2.Minute)
+                        {
+                            if (date1.Second < date2.Second)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    bool dateIsEqual(DateTime date1, DateTime date2)
+    {
+        if (date1.Year == date2.Year && date1.Month == date2.Month && date1.Day == date2.Day)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    bool dateIsGreaterThan(DateTime date1, DateTime date2)
+    {
+        if (date1.Year > date2.Year)
+        {
+            return true;
+        }
+        else if (date1.Year == date2.Year)
+        {
+            if (date1.Month > date2.Month)
+            {
+                return true;
+            }
+            else if (date1.Month == date2.Month)
+            {
+                if (date1.Day > date2.Day)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    string parseTime(DateTime time)
+    {
+        int hr = time.Hour % 12;
+        int mn = time.Minute;
+        return (hr < 10 ? (hr > 0 ? '0' + hr.ToString() : "12") : hr.ToString()) + ":" + (mn < 10 ? '0' + mn.ToString() : mn.ToString()) + (time.Hour < 12 ? "AM" : "PM");
+    }
+}
+
+<div class="_container">
+    <div class="popup-container @(popupEnabled ? "" : "hidden")">
+        <div class="popup">
+            <div @onclick="hidePopup" id="popup-close">X</div>
+            <label id="cdate">@(dDate.ToString("MM-dd-yyyy"))</label>
+
+            <label for="cahn">Patient AHN</label>
+            <input @bind="@sahn" class="@(sahn != null && !sbook ? "disable" : "")" id="cahn" bind-Value="@(sahn ?? "")" />
+
+            <label for="cdoctor">Doctor</label>
+            <select @bind="@sdoctor" class="@(!sbook ? "disable" : "")" bind-Value="@(sdoctor ?? "")" id="cdoctor">
+                <option value="">Select a doctor</option>
+                <option value="Dr. Gerald Jinx Mouse">Dr. Gerald Jinx Mouse</option>
+                <option value="2">Doctor 2</option>
+                <option value="3">Doctor 3</option>
+                <option value="4">Doctor 4</option>
+            </select>
+
+            <label for="clength">Length</label>
+            <select @bind="slength" class="@(!sbook ? "disable" : "")" bind-Value="@slength" id="clength">
+                <option value="15">15 minutes</option>
+                <option value="30">30 minutes</option>
+                <option value="45">45 minutes</option>
+                <option value="60">60 minutes</option>
+            </select>
+
+            <label for="ctime">Time</label>
+            <div id="ctime">@dDate.Hour:@formatMin(dDate.Minute) to @dDate.AddMinutes(int.Parse(slength ?? "15")).Hour:@formatMin(dDate.AddMinutes(int.Parse(slength ?? "15")).Minute)</div>
+            
+            <button @onclick="bookAppointment" id="cbook">@(!sbook ? "Delete Appointment" : "Book Appointment")</button>
+        </div>
+    </div>
+
+    <div class="calendar @(popupEnabled ? "blur" : "")">
+        <div class="info-box-container @(infoBox != "" ? "" : "hidden")">
+            <div class="info-box">
+                <span class="info-box-info">@infoBox</span>
+                <div @onclick="closeInfo" id="info-box-close">X</div>
+            </div>
+        </div>
+        @switch(calendarMode)
+        {
+            case 0: // Month View
+                <div class=calendar-title-bar>
+                    <div class="calendar-title">
+                        <div class="calendar-title-container">
+                            <button id="previous" @onclick="previousMonth">&lt</button>
+                            <h2 id="month">@months[currentDate.Month - 1], @currentDate.Year</h2>
+                            <button id="next" @onclick="nextMonth">&gt</button>
+                        </div>
+                    </div>
+
+                    <div class="calendar-views">
+                        <button id="vtoday" @onclick="dayView">Day</button>
+                        <button id="vweek" @onclick="weekView">Week</button>
+                        <button id="vmonth" class="sel">Month</button>
+                    </div>
+                </div>
+                <ul class="calendar-weekdays">
+                    @foreach (var day in daysOfWeek)
+                    {
+                        <li class="day-title">@day</li>
+                    }
+                </ul>
+
+                <ul class="calendar-days">
+                    @{var j = start;}
+                    @while (true)
+                    {
+                        @if (j > 0 && j <= days)
+                        {
+                            DateTime curDate = new DateTime(currentDate.Year, currentDate.Month, j);
+                            <li @onclick="() => openDay(curDate)" class="calendar-day @(cnt % 7 == 1 ? "sunday" : "") @(dateIsLessThan(new DateTime(currentDate.Year, currentDate.Month, j), date) ? "empty" : "") @(currentDate.Month == date.Month && currentDate.Year == date.Year && j == date.Day ? "today" : "")">
+                                <span class="day-num">@j</span>
+                                
+                                @if (dateIsGreaterThan(new DateTime(currentDate.Year, currentDate.Month, j), date.AddDays(-1)) && !(dateIsEqual(new DateTime(currentDate.Year, currentDate.Month, j), date) && date.Hour >= 17))
+                                {
+                                    <div class="day-info">Scheduled Doctors: 1</div>
+                                    @if (appointments.ContainsKey($"{currentDate.Year}-{currentDate.Month}-{j}")) {
+                                        int appointmentCount = appointments[$"{currentDate.Year}-{currentDate.Month}-{j}"].Count();
+                                        int totalTime = 0;
+                                        int pastAppointments = (date.Hour - 9) * 4;
+
+                                        foreach (JToken data in appointments[$"{currentDate.Year}-{currentDate.Month}-{j}"])
+                                        {
+                                            foreach (JToken child in data.Children())
+                                            {
+                                                totalTime += (int) child["length"];
+                                            }
+                                        }
+                                        int bookedAppointments = totalTime / 15;
+                                        <div class="day-info">Booked Appointments: @appointmentCount</div>
+                                        <div class="day-info">Available Appointments: @(40 - bookedAppointments)</div>
+                                    } else {
+                                        <div class="day-info">Booked Appointments: 0</div>
+                                        <div class="day-info">Available Appointments: 40</div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="day-info">No Appointments</div>
+                                }
+                            </li>
+                        } else {
+                            <li class="calendar-day blank @(cnt % 7 == 1 ? "sunday" : "")"></li>
+                        }
+                        cnt++;
+                        j++;
+
+                
+                
+                        @if (j > lastDayOfMonth.Day && cnt % 7 == 1) { break; }
+                    }
+                </ul>
+                break;
+            case 1: // Week View
+                var sow = getStartOfWeek();
+                int weekLength = getWeekLength(sow);
+                @if (sow.Day + weekLength == days)
+                    {
+                        currentDate = new DateTime(currentDate.Year, currentDate.Month, days);
+                    }
+                
+                <div class=calendar-title-bar>
+                    <div class="calendar-title">
+                        <div class="calendar-title-container">
+                            <button id="previous" @onclick="previousWeek">&lt</button>
+                            <h2 id="week">@months[sow.Month - 1], @sow.Day - @(sow.Day+weekLength) @sow.Year</h2>
+                            <button id="next" @onclick="nextWeek">&gt</button>
+                        </div>
+                    </div>
+
+                    <div class="calendar-views">
+                        <button id="vtoday" @onclick="dayView">Day</button>
+                        <button id="vweek" class="sel">Week</button>
+                        <button id="vmonth" @onclick="monthView">Month</button>
+                    </div>
+                </div>
+
+                <ul class="calendar-weekdays">
+                    @{
+                        var dayStart = sow.Day;
+                        var dayEnd = sow.Day + weekLength;
+                        if(weekLength < 6)
+                        {
+                            if (sow.Day + 6 > days)
+                            {
+                                dayEnd = dayEnd + (6 - weekLength);
+                            }
+                            else
+                            {
+                                dayStart = sow.Day - (6 - weekLength);       
+                            }
+                        }
+                    }
+                    @for (var day = dayStart; day <= dayEnd; day++)
+                    {
+                        @if (day > 0 && day <= days) {
+                            DateTime curDate = new DateTime(currentDate.Year, currentDate.Month, day);
+                            <li @onclick="() => openDay(curDate)" class="day-title @(currentDate.Month == date.Month && currentDate.Year == date.Year && day == date.Day ? "today" : "") @((day < 1 || day > days) ? "blank" : "")">@((day < 1 || day > days) ? "" : $"{(new DateTime(currentDate.Year, currentDate.Month, day)).DayOfWeek} - {day}")</li>
+                        } else {
+                            <li class="day-title blank"></li>
+                        }
+                    }
+                </ul>
+                <ul class="calendar-days-week">
+                    @for (var day = dayStart; day <= dayEnd; day++)
+                    {
+                        @if (day < 1 || day > days)
+                        {
+                            <li class="day-col blank"></li>
+                        } 
+                        else
+                        {
+                            @* You can assign a variable with the current date up here, then below run a for loop and use dateVar = dateVar.AddMinutes(min) to increment it *@
+                            <li class="day-col @(currentDate.Month == date.Month && currentDate.Year == date.Year && day == date.Day ? "today" : "")">
+                                <div class="day-col-info @(dateIsLessThan(new DateTime(currentDate.Year, currentDate.Month, day, 18, 0, 0), date) ? "empty" : "")">
+                                    @if (dateIsGreaterThan(new DateTime(currentDate.Year, currentDate.Month, day), date.AddDays(-1)))
+                                    {
+                                        DateTime curTime = new DateTime(currentDate.Year, currentDate.Month, day, 9, 0, 0);
+                                        int tLeft = 0;
+                                        string cuTime = "";
+                                        <ul class="time-slot"> 
+                                            @while (curTime.Hour < 17)
+                                            {
+                                                <li class="time-slot-item time">@parseTime(curTime)</li>
+                                                
+                                                @if (appointments.ContainsKey($"{currentDate.Year}-{currentDate.Month}-{day}")) {
+                                                    var apps = appointments[$"{currentDate.Year}-{currentDate.Month}-{day}"];
+                                                    @if (apps[(curTime.Hour < 10 ? "0" + curTime.Hour.ToString() : curTime.Hour) + ":" + (curTime.Minute < 10 ? "0" + curTime.Minute.ToString() : curTime.Minute)] != null) {
+                                                        cuTime = (curTime.Hour < 10 ? "0" + curTime.Hour.ToString() : curTime.Hour) + ":" + (curTime.Minute < 10 ? "0" + curTime.Minute.ToString() : curTime.Minute);
+                                                        var app = apps[cuTime];
+                                                        DateTime rnTime = curTime; //new DateTime(curTime.Year, curTime.Month, curTime.Day, curTime.Hour, curTime.Minute, curTime.Second);
+
+                                                        string doc = (string) app["doctor"];
+                                                        string ahn = (string) app["ahn"];
+                                                        string len = (string) app["length"];
+                                                        bool book = false;
+
+                                                        tLeft = (int) app["length"];
+                                                        <li class="time-slot-item appointment" @onclick="() => viewPopup(rnTime, doc, ahn, len, book)">@fileManager.GetPatientName((string) app["ahn"])</li>
+                                                    } else if (tLeft > 0) {
+                                                        var app = apps[cuTime];
+
+                                                        string doc = (string) app["doctor"];
+                                                        string ahn = (string) app["ahn"];
+                                                        string len = (string) app["length"];
+                                                        bool book = false;
+                                                        DateTime rnTime = curTime; // new DateTime(curTime.Year, curTime.Month, curTime.Day, curTime.Hour, curTime.Minute, curTime.Second);
+
+                                                        <li class="time-slot-item appointment" @onclick="() => viewPopup(rnTime, doc, ahn, len, book)">@fileManager.GetPatientName((string) apps[cuTime]["ahn"])</li>
+                                                    } else {
+                                                        DateTime rnTime = curTime;
+                                                        @if (!dateIsLessThan(curTime, date))
+                                                        {
+                                                            <li @onclick="() => showPopup(rnTime)" class="time-slot-item appointment blank">Open</li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li class="time-slot-item appointment error">Passed</li>
+                                                        }
+                                                    }
+                                                } else {
+                                                    DateTime rnTime = curTime;
+
+                                                    @if (!dateIsLessThan(curTime, date))
+                                                    {
+                                                        <li @onclick="() => showPopup(rnTime)" class="time-slot-item appointment blank">Open</li>
+                                                    }
+                                                    else
+                                                    {
+                                                        <li class="time-slot-item appointment error">Passed</li>
+                                                    }
+                                                }
+
+                                                curTime = curTime.AddMinutes(15);
+                                                @if (tLeft > 0) {
+                                                    tLeft -= 15;
+                                                }
+                                            }
+                                        </ul>
+                                    }
+                                </div>
+                            </li>
+                        }
+                    }
+                </ul>
+                break;
+            case 2: // Day View
+                <div class=calendar-title-bar>
+                    <div class="calendar-title">
+                        <div class="calendar-title-container">
+                            <button id="previous" @onclick="previousDay">&lt</button>
+                            <h2 id="day">@months[currentDate.Month - 1] @currentDate.Day, @currentDate.Year</h2>
+                            <button id="next" @onclick="nextDay">&gt</button>
+                        </div>
+                    </div>
+
+                    <div class="calendar-views">
+                        <button id="vtoday" class="sel">Day</button>
+                        <button id="vweek" @onclick="weekView">Week</button>
+                        <button id="vmonth" @onclick="monthView">Month</button>
+                    </div>
+                </div>
+
+                <table>
+                    <tr>
+                        <th class="htime">Time</th>
+                        <th class="hdata">@currentDate.DayOfWeek.ToString()</th>
+                    </tr>
+
+                    @{
+                        DateTime cTime = new DateTime(currentDate.Year, currentDate.Month, currentDate.Day, 9, 0, 0);
+                        int dtLeft = 0;
+                        string dcuTime = "";
+                    }
+                    
+                    @while (cTime.Hour < 17)
+                    {
+                        <tr>
+                            <td>@parseTime(cTime)</td>
+                            <td class="tapp">
+                                <div class="tapp-info">
+                                    @if (appointments.ContainsKey($"{currentDate.Year}-{currentDate.Month}-{currentDate.Day}"))
+                                    {
+                                        var apps = appointments[$"{currentDate.Year}-{currentDate.Month}-{currentDate.Day}"];
+                                        @if (apps[(cTime.Hour < 10 ? "0" + cTime.Hour.ToString() : cTime.Hour) + ":" + (cTime.Minute < 10 ? "0" + cTime.Minute.ToString() : cTime.Minute)] != null)
+                                        {
+                                            dcuTime = (cTime.Hour < 10 ? "0" + cTime.Hour.ToString() : cTime.Hour) + ":" + (cTime.Minute < 10 ? "0" + cTime.Minute.ToString() : cTime.Minute);
+                                            var app = apps[dcuTime];
+
+                                            DateTime rnTime = cTime;
+
+
+                                            string doc = (string) app["doctor"];
+                                            string ahn = (string) app["ahn"];
+                                            string len = (string) app["length"];
+                                            bool book = false;
+
+                                            dtLeft = (int) app["length"];
+                                            <div class="app-info" @onclick="() => viewPopup(rnTime, doc, ahn, len, book)">@fileManager.GetPatientName((string) app["ahn"])</div>
+                                        }
+                                        else if (dtLeft > 0)
+                                        {
+                                            var app = apps[dcuTime];
+                                            DateTime rnTime = cTime;
+
+                                            string doc = (string) app["doctor"];
+                                            string ahn = (string) app["ahn"];
+                                            string len = (string) app["length"];
+                                            bool book = false;
+
+                                            <div class="app-info" @onclick="() => viewPopup(rnTime, doc, ahn, len, book)">@fileManager.GetPatientName((string) app["ahn"])</div>
+                                        }
+                                        else
+                                        {
+                                            DateTime rnTime = cTime;
+
+                                            @if (!dateIsLessThan(rnTime, date))
+                                            {
+                                                <div @onclick="() => showPopup(rnTime)" class="app-info blank">Open</div>
+                                            }
+                                            else
+                                            {
+                                                <div class="app-info error">Passed</div>
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        DateTime rnTime = cTime;
+
+                                        @if (!dateIsLessThan(rnTime, date))
+                                        {
+                                            <div @onclick="() => showPopup(rnTime)" class="app-info blank">Open</div>
+                                        }
+                                        else
+                                        {
+                                            <div class="app-info error">Passed</div>
+                                        }
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+
+                        cTime = cTime.AddMinutes(15);
+                        if (dtLeft > 0)
+                        {
+                            dtLeft -= 15;
+                        }
+                    }
+                </table>
+                break;
+        }
+        
+    </div>    
+</div>
+
+@code {
+    [Parameter]
+    public string? AHN { get; set; } // ricky says hi
+
+    private Regex _AHNValidationRegex = new Regex(@"^\d{5}-\d{4}$");
+
+    public DateTime currentDate = DateTime.Now;
+    private int calendarMode = 1;
+    private bool popupEnabled = false;
+    private Dictionary<string, JToken> appointments = new Dictionary<string, JToken>();
+
+    private string sahn;
+    private string sdoctor;
+    private string slength = "15";
+    private DateTime dDate = DateTime.Now;
+    private bool sbook = true;
+
+    private string infoBox = "";
+
+    private bool canEdit = true;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        if (AHN != null)
+        {
+            if (!fileManager.PatientExists(AHN))
+            {
+                Console.WriteLine("Patient with AHN: " + AHN + ", does not exist!");
+                return;
+            }
+            Console.WriteLine("Initialized with AHN: " + AHN);
+            Console.WriteLine("Calendar is calling file manager...");
+            PatientData patientData = fileManager.GetPatientData(AHN);
+            Console.WriteLine("Calendar has finished calling file manager.");
+        }
+
+        Console.WriteLine("Calendar is calling appointment manager...");
+        appointments = fileManager.GetAllAppointments();
+        Console.WriteLine("Calendar has finished calling appointment manager.");
+    }
+
+    public void showPopup(DateTime ctime)
+    {
+        if (!popupEnabled)
+        {
+            dDate = ctime;
+
+            sahn = sahn ?? AHN;
+            popupEnabled = true;
+        }
+    }
+
+    public void hidePopup()
+    {
+        if (popupEnabled)
+        {
+            popupEnabled = false;
+
+            sahn = null;
+            sdoctor = null;
+            slength = null;
+            sbook = true;
+        }
+    }
+
+    public void viewPopup(DateTime ctime, string doc, string ahn, string len, bool book)
+    {
+        sahn = ahn;
+        sdoctor = doc;
+        slength = len;
+        sbook = book;
+
+        showPopup(ctime);
+    }
+
+    public void nextMonth()
+    {
+        currentDate = currentDate.AddMonths(1);
+    }
+
+    public void previousMonth()
+    {
+        currentDate = currentDate.AddMonths(-1);
+    }
+
+    public void nextWeek()
+    {
+        int days = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);
+        if (currentDate.Day + 7 <= days)
+        {
+            if (currentDate.Day + 7 == days) { currentDate = new DateTime(currentDate.Year, currentDate.Month, days);  return; }
+            currentDate = currentDate.AddDays(7);
+        } 
+        else
+        {
+            if (currentDate.Day == days) { currentDate = currentDate.AddDays(1); return; }
+            currentDate = new DateTime(currentDate.Year, currentDate.Month, days);
+        }
+    }
+
+    public void previousWeek()
+    {
+        if (currentDate.Day - 7 > 0)
+        {
+            currentDate = currentDate.AddDays(-7);
+        } 
+        else
+        {
+            if (currentDate.Day == 1) { currentDate = currentDate.AddDays(-1); return; }
+            currentDate = new DateTime(currentDate.Year, currentDate.Month, 1);
+        }
+    }
+
+    public void nextDay()
+    {
+        currentDate = currentDate.AddDays(1);
+    }
+
+    public void previousDay()
+    {
+        currentDate = currentDate.AddDays(-1);
+    }
+
+    public void monthView()
+    {
+        calendarMode = 0;
+    }
+
+    public void weekView()
+    {
+        calendarMode = 1;
+    }
+
+    public void dayView()
+    {
+        calendarMode = 2;
+    }
+
+    public void openDay(DateTime day) 
+    {
+        currentDate = day;
+        dayView();
+    }
+
+    public void bookAppointment()
+    {
+        if (!sbook)
+        {
+            deleteAppointment();
+            return;
+        }
+
+        string ahn = sahn ?? AHN;
+        if (!_AHNValidationRegex.IsMatch(ahn))
+        {
+            Console.WriteLine("Appointed failed to book!");
+            infoBox = "You've failed to book an appointment. Please enter a valid AHN.";
+            hidePopup();
+            return;
+        }
+
+        AppointmentData appointmentData = new AppointmentData();
+        appointmentData.PatientAHN = sahn ?? AHN;
+        appointmentData.AppointmentStartTime = dDate;
+        appointmentData.AppointmentEndTime = dDate.AddMinutes(int.Parse(slength));
+        appointmentData.Doctor = sdoctor;
+        appointmentData.Length = int.Parse(slength);
+        if (fileManager.BookAppointment(appointmentData)) {
+            Console.WriteLine("Appointment booked!");
+            appointments = fileManager.GetAllAppointments();
+            hidePopup();
+            infoBox = $"You've successfully booked an appointment for {fileManager.GetPatientName(appointmentData.PatientAHN)} on {dDate.ToString("MM-dd-yyyy")} at {dDate.ToString("HH:mm")}";
+            StateHasChanged();
+        } else {
+            Console.WriteLine("Appointed failed to book!");
+            infoBox = $"You've failed to book an appointment for {fileManager.GetPatientName(appointmentData.PatientAHN)} on {dDate.ToString("MM-dd-yyyy")} at {dDate.ToString("HH:mm")}";
+            hidePopup();
+        }
+    }
+
+    public void deleteAppointment()
+    {
+        // hidePopup();
+        // return;
+
+        if (fileManager.DeleteAppointment(dDate.ToString("yyyy-MM-dd"), dDate.ToString("HH:mm"), sahn ?? AHN)) {
+            Console.WriteLine("Deleted appointment!");
+            appointments = fileManager.GetAllAppointments();
+            hidePopup();
+            StateHasChanged();
+        } else {
+            Console.WriteLine("Failed to delete appointment!");
+            hidePopup();
+        }
+    }
+
+    public void closeInfo()
+    {
+        infoBox = "";
+
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,119 @@
+@page "/accountmanagement"
+@page "/accountmanagement/{id}"
+
+@using System;
+
+@inject FileManager fileManager;
+@inject NavigationManager navigationManager;
+
+<PageTitle>Account Management - Calcare</PageTitle>
+
+<div class="parent">
+    <div class="top">
+        <ul>
+            <li><a href="">F1: [HOME]</a></li>
+            <li><a href="">F2: [PATIENT LOOKUP]</a></li>
+            <li><a href="">F3: [NOT SET]</a></li>
+            <li><a href="">F4: [NOT SET]</a></li>
+
+        </ul>
+    </div>
+</div>
+
+<div class="profilecard">
+    <div class="card">
+        <img id="userimage" src="/images/femalepic.png" alt="user image">
+
+        <p class="title">Nurse</p>
+
+        <EditForm Model="@model" OnValidSubmit="@HandleUpdateSubmit">
+            <DataAnnotationsValidator />
+
+            <div class="form-group">
+                <label for="Name">Name</label>
+                <InputText type="string" @bind-Value="model.Name" placeholder="Name" class="form-control" id="Name" />
+                <ValidationMessage For="() => model.Name" />
+                <label for="ahn">Clinic</label>
+                <InputText type="string" @bind-Value="model.Clinic" placeholder="Clinic" class="form-control" id="ahn" />
+                <ValidationMessage For="() => model.Clinic" />
+                <label for="Name">Email</label>
+                <InputText type="string" @bind-Value="model.Email" placeholder="Email" class="form-control" id="dob" />
+                <ValidationMessage For="() => model.Email" />
+                <label for="Name">Password</label>
+                <InputText type="password" class="form-control" placeholder="Password" @bind-Value="model.Password" />
+                <ValidationMessage For="() => model.Password" />
+                <p><button type="submit" id="userbtn">UPDATE</button></p>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code
+{
+
+    [Parameter]
+    public string? id { get; set; }
+    //public string id="01";
+    private StaffData model = new();
+    private string name;
+    private string staffEmail;
+    private string staffClinic;
+    private string staffPassword;
+    StaffData staffData = new StaffData();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        if (id != null)
+        {
+
+            if (!fileManager.StaffExists(id))
+            {
+                Console.WriteLine("Staff with AHN: " + id + ", does not exist!");
+                return;
+            }
+
+            StaffData staffData = fileManager.GetStaffData(id);
+
+
+            name = staffData.Name;
+            Console.WriteLine("HERE: " + name);
+            staffEmail = staffData.Email;
+            staffClinic = staffData.Clinic;
+            staffPassword = staffData.Password;
+
+            model.Name = staffData.Name;
+            model.Clinic = staffData.Clinic;
+            model.Password = staffData.Password;
+            model.Email = staffData.Email;
+        }
+    }
+    public void updateHandle()
+    {
+        staffData = fileManager.GetStaffData(id);
+
+        staffData.Name = name;
+        staffData.Email = staffEmail;
+        staffData.Clinic = staffClinic;
+        staffData.Password = staffPassword;
+
+        fileManager.SetStaffData(id, staffData);
+
+        name = staffData.Name;
+        staffEmail = staffData.Email;
+        staffClinic = staffData.Clinic;
+        staffPassword = staffData.Password;
+
+        name = model.Name;
+        staffEmail = model.Email;
+        staffClinic = model.Clinic;
+        staffPassword = model.Password;
+
+        navigationManager.NavigateTo("/accountmanagement/" + id);
+    }
+
+    public void HandleUpdateSubmit()
+    {
+        updateHandle();
+    }
+}
